@@ -22,20 +22,12 @@
       Viento: <strong>{{ lugar.viento }} km/h</strong>
     </p>
 
-    <!-- Usamos el componente modularizado -->
     <PronosticoSemanal :pronostico="lugar.pronosticoSemanal" />
 
-    <section class="detail-section" v-if="estadisticas">
-      <h3>Estadísticas de la semana</h3>
-      <ul class="stats-list">
-        <li>Mínima semanal: {{ formatearTemp(estadisticas.minSemana) }}</li>
-        <li>Máxima semanal: {{ formatearTemp(estadisticas.maxSemana) }}</li>
-        <li>
-          Promedio semanal:
-          {{ formatearTemp(estadisticas.promedioSemana) }}
-        </li>
-      </ul>
-    </section>
+    <EstadisticasSemanales
+      :estadisticas="estadisticas"
+      :temperature-unit="temperatureUnit"
+    />
   </section>
 
   <section v-else class="detail">
@@ -50,6 +42,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getLugarPorId } from '../data/lugares'
 import { getSavedUnit, saveUnit } from '../config/temperatureConfig'
 import PronosticoSemanal from '../components/PronosticoSemanal.vue'
+import EstadisticasSemanales from '../components/EstadisticasSemanales.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -89,7 +82,7 @@ function formatearTemp(tempC) {
   return `${tempF.toFixed(1)} °F`
 }
 
-// Opcional: si después agregas UI para cambiar unidad en Detalle
+// Opcional: UI futura para cambiar unidad desde Detalle
 function cambiarUnidad(unidad) {
   temperatureUnit.value = unidad
   saveUnit(unidad)
@@ -111,14 +104,5 @@ function volverHome() {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-}
-
-.detail-section {
-  margin-top: 1rem;
-}
-
-.stats-list {
-  list-style: none;
-  padding: 0;
 }
 </style>

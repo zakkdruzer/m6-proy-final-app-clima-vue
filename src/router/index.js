@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import PlaceDetailView from '../views/PlaceDetailView.vue'
 
@@ -6,18 +6,18 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView, // Ruta principal con listado de lugares
+    component: HomeView,
   },
   {
     path: '/place/:id',
     name: 'place-detail',
-    component: PlaceDetailView, // Ruta dinámica para detalle
-    props: true, // Permite recibir :id como prop
+    component: PlaceDetailView,
+    props: true,
   },
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 })
 

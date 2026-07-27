@@ -1,4 +1,3 @@
-<!-- src/views/PlaceDetailView.vue -->
 <template>
   <section v-if="lugar" class="detail">
     <header class="detail-header">

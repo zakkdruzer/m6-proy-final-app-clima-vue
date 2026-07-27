@@ -1,4 +1,3 @@
-<!-- src/App.vue -->
 <template>
   <div class="app">
     <!-- Cabecera básica de la SPA -->

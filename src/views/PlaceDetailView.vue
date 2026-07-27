@@ -14,7 +14,7 @@
     </p>
     <p>
       Temperatura actual:
-      <strong>{{ lugar.tempActual }} °C</strong>
+      <strong>{{ formatearTemp(lugar.tempActual) }}</strong>
     </p>
     <p>
       Humedad: <strong>{{ lugar.humedad }}%</strong> ·
@@ -22,13 +22,12 @@
     </p>
 
     <!-- Pronóstico semanal -->
-    <section class="detail-section">
-      <h3>Pronóstico semanal</h3>
-      <ul class="forecast-list">
-        <li v-for="dia in lugar.pronosticoSemanal" :key="dia.dia">
-          <strong>{{ dia.dia }}:</strong>
-          Min {{ dia.min }} °C - Max {{ dia.max }} °C · {{ dia.estado }}
-        </li>
+    <section class="detail-section" v-if="estadisticas">
+      <h3>Estadísticas de la semana</h3>
+      <ul class="stats-list">
+        <li>Mínima semanal: {{ formatearTemp(estadisticas.minSemana) }}</li>
+        <li>Máxima semanal: {{ formatearTemp(estadisticas.maxSemana) }}</li>
+        <li>Promedio semanal: {{ formatearTemp(estadisticas.promedioSemana) }}</li>
       </ul>
     </section>
 
@@ -50,21 +49,21 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getLugarPorId } from '../data/lugares'
+import { getSavedUnit, saveUnit } from '../config/temperatureConfig'
 
-// Tomar :id desde la ruta actual
 const route = useRoute()
 const router = useRouter()
 
-// Buscar el lugar según el id
+const temperatureUnit = ref(getSavedUnit())
+
 const lugar = computed(() => {
   const id = route.params.id
   return getLugarPorId(id)
 })
 
-// Computed para calcular estadísticas semanales (min, max, promedio)
 const estadisticas = computed(() => {
   if (!lugar.value || !lugar.value.pronosticoSemanal) return null
 
@@ -74,7 +73,6 @@ const estadisticas = computed(() => {
   const minSemana = Math.min(...mins)
   const maxSemana = Math.max(...maxs)
 
-  // Usamos el promedio de la media diaria ((min + max) / 2)
   const promedioDia = lugar.value.pronosticoSemanal.map(
     (d) => (d.min + d.max) / 2
   )
@@ -88,7 +86,19 @@ const estadisticas = computed(() => {
   }
 })
 
-// Volver a la ruta principal
+// Formatear temperatura según unidad
+function formatearTemp(tempC) {
+  if (temperatureUnit.value === 'C') return `${tempC} °C`
+  const tempF = tempC * 9 / 5 + 32
+  return `${tempF.toFixed(1)} °F`
+}
+
+// Opcional: permitir cambiar unidad desde el detalle también
+function cambiarUnidad(unidad) {
+  temperatureUnit.value = unidad
+  saveUnit(unidad)
+}
+
 function volverHome() {
   router.push({ name: 'home' })
 }

@@ -7,7 +7,7 @@
     dia, min, max, estado
 ========================================================= */
 
-const lugares = [
+export const lugares = [
   {
     id: "santiago",
     nombre: "Santiago",

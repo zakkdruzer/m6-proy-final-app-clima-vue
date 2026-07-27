@@ -54,17 +54,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { lugares } from '../data/lugares'
+import { getSavedUnit, saveUnit } from '../config/temperatureConfig'
 
 // Estado para búsqueda y unidad
 const searchTerm = ref('')
-const temperatureUnit = ref('C')
+const temperatureUnit = ref(getSavedUnit())
 
 const router = useRouter()
 
-// Filtrar lugares por nombre (o región si quieres ampliarlo)
 const lugaresFiltrados = computed(() => {
   const term = searchTerm.value.toLowerCase().trim()
   if (!term) return lugares
@@ -73,7 +73,6 @@ const lugaresFiltrados = computed(() => {
   )
 })
 
-// Conversión simple entre °C y °F usando tempActual (ya en °C)
 function formatearTemperatura(tempC) {
   if (temperatureUnit.value === 'C') {
     return `${tempC} °C`
@@ -82,10 +81,14 @@ function formatearTemperatura(tempC) {
   return `${tempF.toFixed(1)} °F`
 }
 
-// Navegar a detalle usando el id del lugar
 function irADetalle(id) {
   router.push({ name: 'place-detail', params: { id } })
 }
+
+// Guardar la unidad en localStorage cuando cambie
+watch(temperatureUnit, (nuevaUnidad) => {
+  saveUnit(nuevaUnidad)
+})
 </script>
 
 <style scoped>

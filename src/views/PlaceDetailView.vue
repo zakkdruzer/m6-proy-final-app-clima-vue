@@ -1,3 +1,4 @@
+<!-- src/views/PlaceDetailView.vue -->
 <template>
   <section v-if="lugar" class="detail">
     <header class="detail-header">
@@ -21,23 +22,18 @@
       Viento: <strong>{{ lugar.viento }} km/h</strong>
     </p>
 
-    <!-- Pronóstico semanal -->
+    <!-- Usamos el componente modularizado -->
+    <PronosticoSemanal :pronostico="lugar.pronosticoSemanal" />
+
     <section class="detail-section" v-if="estadisticas">
       <h3>Estadísticas de la semana</h3>
       <ul class="stats-list">
         <li>Mínima semanal: {{ formatearTemp(estadisticas.minSemana) }}</li>
         <li>Máxima semanal: {{ formatearTemp(estadisticas.maxSemana) }}</li>
-        <li>Promedio semanal: {{ formatearTemp(estadisticas.promedioSemana) }}</li>
-      </ul>
-    </section>
-
-    <!-- Estadísticas semanales calculadas -->
-    <section class="detail-section" v-if="estadisticas">
-      <h3>Estadísticas de la semana</h3>
-      <ul class="stats-list">
-        <li>Mínima semanal: {{ estadisticas.minSemana }} °C</li>
-        <li>Máxima semanal: {{ estadisticas.maxSemana }} °C</li>
-        <li>Promedio semanal: {{ estadisticas.promedioSemana.toFixed(1) }} °C</li>
+        <li>
+          Promedio semanal:
+          {{ formatearTemp(estadisticas.promedioSemana) }}
+        </li>
       </ul>
     </section>
   </section>
@@ -53,6 +49,7 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getLugarPorId } from '../data/lugares'
 import { getSavedUnit, saveUnit } from '../config/temperatureConfig'
+import PronosticoSemanal from '../components/PronosticoSemanal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -86,14 +83,13 @@ const estadisticas = computed(() => {
   }
 })
 
-// Formatear temperatura según unidad
 function formatearTemp(tempC) {
   if (temperatureUnit.value === 'C') return `${tempC} °C`
   const tempF = tempC * 9 / 5 + 32
   return `${tempF.toFixed(1)} °F`
 }
 
-// Opcional: permitir cambiar unidad desde el detalle también
+// Opcional: si después agregas UI para cambiar unidad en Detalle
 function cambiarUnidad(unidad) {
   temperatureUnit.value = unidad
   saveUnit(unidad)
@@ -121,7 +117,6 @@ function volverHome() {
   margin-top: 1rem;
 }
 
-.forecast-list,
 .stats-list {
   list-style: none;
   padding: 0;
